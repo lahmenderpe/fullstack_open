@@ -1,0 +1,20 @@
+.success,
+.error {
+	padding: 20px;
+	border: 2px solid #ddd;
+	width: 400px;
+	border-radius: 8px;
+	margin-top: 10px;
+}
+
+.success {
+	background-color: #d3ffda;
+	border-color: #285830;
+	color: #285830;
+}
+
+.error {
+	background-color: rgb(255, 213, 206);
+	border-color: tomato;
+	color: #9b3c2c;
+}
