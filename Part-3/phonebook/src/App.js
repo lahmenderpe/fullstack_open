@@ -114,7 +114,6 @@ const App = () => {
 						const tempPersons = [...persons];
 						tempPersons.splice(index, 1, response.data);
 						setPersons(tempPersons);
-						console.log("Burayasadds");
 						showMessage(
 							`${newPerson.name} successfully added to phonebook`,
 							"success"
@@ -122,10 +121,14 @@ const App = () => {
 						clearAddFields();
 					})
 					.catch((error) => {
-						showMessage(
-							`Something went wrong while adding ${newPerson.name} to phonebook`,
-							"error"
-						);
+						if (error.response.status === 400) {
+							showMessage(error.response.data.error, "error");
+						} else {
+							showMessage(
+								`Something went wrong while adding ${newPerson.name} to phonebook`,
+								"error"
+							);
+						}
 					});
 
 				return;
@@ -151,6 +154,8 @@ const App = () => {
 						`Something went wrong while adding ${newPerson.name} to phonebook`,
 						"error"
 					);
+				} else if (error.response.status === 400) {
+					showMessage(error.response.data.error, "error");
 				}
 			});
 	};
@@ -166,7 +171,7 @@ const App = () => {
 			personService
 				.deletePerson(id)
 				.then((response) => {
-					if (response.status === 200) {
+					if (response.status === 204) {
 						const tempList = persons.filter((person) => person.id !== id);
 						showMessage(`${foundPerson.name} deleted successfully`, "success");
 						setPersons(tempList);
