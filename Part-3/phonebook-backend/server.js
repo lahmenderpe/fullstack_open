@@ -68,15 +68,9 @@ app.delete("/api/persons/:id", (req, res, next) => {
 // Add a new person
 app.post("/api/persons", (req, res, next) => {
 	const { name, number } = req.body;
-	const foundName = persons.find(
-		(p) => p.name.toLowerCase() === name.toLowerCase()
-	);
+
 	if (!name || !number) {
 		res.status(400).json({ error: "please provide a name and number" });
-		return;
-	}
-	if (foundName) {
-		res.status(400).json({ error: "The name must be unique" });
 		return;
 	}
 
