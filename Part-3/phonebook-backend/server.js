@@ -30,7 +30,9 @@ const errorHandler = (error, request, response, next) => {
 	if (error.name === "CastError") {
 		return response.status(400).send("malformatted id");
 	} else if (error.name === "ValidationError") {
-		return response.status(400).json({ error: error.message });
+		return response.status(400).json({
+			error: error.message,
+		});
 	}
 
 	next(error);
@@ -43,7 +45,9 @@ app.get("/api/persons", (req, res) => {
 
 // Get e single person
 app.get("/api/persons/:id", (req, res, next) => {
-	const { id } = req.params;
+	const {
+		id
+	} = req.params;
 
 	Person.findById(id)
 		.then((response) => {
@@ -58,7 +62,10 @@ app.get("/api/persons/:id", (req, res, next) => {
 
 // Delete a single person
 app.delete("/api/persons/:id", (req, res, next) => {
-	const { id } = req.params;
+	let lkala;
+	const {
+		id
+	} = req.params;
 
 	Person.findByIdAndRemove(id)
 		.then((response) => res.status(204).end())
@@ -67,10 +74,15 @@ app.delete("/api/persons/:id", (req, res, next) => {
 
 // Add a new person
 app.post("/api/persons", (req, res, next) => {
-	const { name, number } = req.body;
+	const {
+		name,
+		number
+	} = req.body;
 
 	if (!name || !number) {
-		res.status(400).json({ error: "please provide a name and number" });
+		res.status(400).json({
+			error: "please provide a name and number",
+		});
 		return;
 	}
 
@@ -84,16 +96,18 @@ app.post("/api/persons", (req, res, next) => {
 
 // Update person
 app.put("/api/persons/:id", (req, res, next) => {
-	const { id } = req.params;
+	const {
+		id
+	} = req.params;
 	const body = req.body;
 
 	console.log(body);
 
 	Person.findByIdAndUpdate(id, body, {
-		new: true,
-		runValidators: true,
-		context: "query",
-	})
+			new: true,
+			runValidators: true,
+			context: "query",
+		})
 		.then((response) => {
 			res.status(200).json(response);
 		})
