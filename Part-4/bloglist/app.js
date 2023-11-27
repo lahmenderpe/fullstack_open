@@ -1,30 +1,32 @@
-const express = require('express')
-const app = express()
-const cors = require('cors')
-const mongoose = require('mongoose')
-const config = require("./utils/config.js")
-const blogRouter = require("./controllers/blog.controller.js")
-const {
-  info,
-  error
-} = require("./utils/logger.js")
+const express = require("express");
+const app = express();
+const cors = require("cors");
+const mongoose = require("mongoose");
+const config = require("./utils/config.js");
+const blogRouter = require("./controllers/blog.controller.js");
+const userRouter = require("./controllers/user.controller.js");
+const { info, error } = require("./utils/logger.js");
+const errorHandler = require("./middleware/errorHandler.js");
 
 // middlewares
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
 // routers
-app.use("/api/blogs", blogRouter)
+app.use("/api/user", userRouter);
+app.use("/api/blog", blogRouter);
 
+app.use(errorHandler);
 
-info('connecting to MongoDB...')
+info("connecting to MongoDB...");
 
-mongoose.connect(config.MONGODB_URL)
+mongoose
+  .connect(config.MONGODB_URL)
   .then(() => {
-    info('connected to MongoDB')
+    info("connected to MongoDB");
   })
   .catch((err) => {
-    error('error connecting to MongoDB:', err.message)
-  })
+    error("error connecting to MongoDB:", err.message);
+  });
 
-module.exports = app
+module.exports = app;
