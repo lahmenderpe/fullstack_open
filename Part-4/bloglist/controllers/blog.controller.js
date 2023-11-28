@@ -22,13 +22,12 @@ blogRouter.post(
   [authHandler, userExtractor],
   async (request, response, next) => {
     const user = request.user;
-
     if (!user.id) {
-      return response.status(400).send("Invalid token");
+      return response.status(401).send("Invalid token");
     }
+    const { title, url } = request.body;
 
     try {
-      const { title, url } = request.body;
       if (!title || !url) {
         return response.status(400).send();
       }
@@ -37,7 +36,7 @@ blogRouter.post(
         user: user.id,
       });
       const savedBlog = await blog.save();
-      const newUser = await User.findById(user.id);
+      const newUser = await User.find({ id: user.id });
       newUser.blogs = newUser.blogs.concat(savedBlog._id);
       await newUser.save();
       response.status(201).json(savedBlog);
@@ -74,7 +73,7 @@ blogRouter.delete(
   }
 );
 
-blogRouter.put("/:id", authHandler, async (request, response, next) => {
+blogRouter.put("/:id", async (request, response, next) => {
   try {
     const { id } = request.params;
     const updated = await Blog.findByIdAndUpdate(id, request.body, {

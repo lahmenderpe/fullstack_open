@@ -1,7 +1,7 @@
 const authHandler = (request, response, next) => {
-  const authorization = request.headers.authorization;
+  const authorization = request?.headers?.authorization;
 
-  if (!authorization && !authorization.startsWith("Bearer ")) {
+  if (!authorization && !authorization?.startsWith("Bearer ")) {
     return response.status(401).send("Invalid token");
   }
 

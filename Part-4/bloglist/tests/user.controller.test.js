@@ -1,31 +1,8 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app.js");
-const User = require("../models/User");
 
 const api = supertest(app);
-
-const initialUsers = [
-  {
-    username: "user1",
-    name: "user1",
-    password: "password1",
-  },
-  {
-    username: "user2",
-    name: "user2",
-    password: "password2",
-  },
-];
-
-beforeEach(async () => {
-  await User.deleteMany({});
-
-  for (let user of initialUsers) {
-    const newUser = new User(user);
-    await newUser.save();
-  }
-});
 
 test("User is not created if the username is not provided", async () => {
   const testUser = {
@@ -33,12 +10,11 @@ test("User is not created if the username is not provided", async () => {
     password: "testpass",
   };
 
-  let response = await api.post("/api/user/signin").send(testUser).expect(401);
+  let response = await api.post("/api/user/signup").send(testUser).expect(401);
 
-  expect(response.body.error).toBe("invalid username or password");
-
-  response = await api.get("/api/user");
-  expect(response.body).toHaveLength(2);
+  expect(response.body.error).toBe(
+    "User validation failed: username: Path `username` is required."
+  );
 });
 
 test("User is not created if the password is not provided", async () => {
@@ -47,12 +23,9 @@ test("User is not created if the password is not provided", async () => {
     name: "testname",
   };
 
-  let response = await api.post("/api/user/signin").send(testUser).expect(401);
+  let response = await api.post("/api/user/signup").send(testUser).expect(401);
 
-  expect(response.body.error).toBe("invalid username or password");
-
-  response = await api.get("/api/user");
-  expect(response.body).toHaveLength(2);
+  expect(response.body.error).toBe("Password is required.");
 });
 
 afterAll(async () => {

@@ -5,7 +5,7 @@ const Blog = require("../models/Blog.js");
 
 const api = supertest(app);
 const testToken =
-  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWQiOiI2NTY1MDk3NzVkN2U4NTU1MjY0N2E3YTEiLCJpYXQiOjE3MDExMjAzOTd9.kJ6n7-DH1Mc3msM9PT9jUOiFH0eW3mixDyi93X74lhg";
+  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWQiOiI2NTY1Zjc2M2YwODFhZGEyZWNhOTBiYzIiLCJpYXQiOjE3MDExODEzNTh9.kzL-JJym3AqYNwrd-TCssFq4Q2SzNLc-R4lPL_tR168";
 
 const initialBlogs = [
   {
@@ -26,7 +26,7 @@ beforeEach(async () => {
   await Blog.deleteMany({});
 
   for (let blog of initialBlogs) {
-    const newBlog = new Blog({ ...blog, user: "656509775d7e85552647a7a1" });
+    const newBlog = new Blog({ ...blog, user: "6565f763f081ada2eca90bc2" });
     await newBlog.save();
   }
 });
@@ -56,7 +56,10 @@ test("add blog post to the database successfully", async () => {
     likes: 0,
   };
 
-  await api.post("/api/blog").set("Authorization", testToken).send(blog);
+  const res = await api
+    .post("/api/blog")
+    .set("Authorization", testToken)
+    .send(blog);
 
   const response = await api.get("/api/blog");
   expect(response.body).toHaveLength(initialBlogs.length + 1);
@@ -70,9 +73,10 @@ test("if the likes property is missing from the request, it will default to the 
   };
 
   await Blog.deleteMany({});
+
   await api.post("/api/blog").set("Authorization", testToken).send(blog);
 
-  const response = await api.get("/api/blog");
+  const response = await api.get("/api/blog").expect(200);
   expect(response.body[0].likes).toBe(0);
 });
 
@@ -112,19 +116,41 @@ test("delete single blog", async () => {
     .delete(`/api/blog/${response.body[0].id}`)
     .set("Authorization", testToken)
     .expect(200);
-  response = await api.get("/api/blog");
+  response = await api.get("/api/blog").expect(200);
   expect(response.body).toHaveLength(1);
 });
 
 test("update single blog", async () => {
+  const blog = {
+    title: "Canonical string reduction",
+    author: "Edsger W. Dijkstra",
+    url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+  };
+  await api.post("/api/blog").set("Authorization", testToken).send(blog);
   let response = await api.get("/api/blog");
-  const temp = response.body[0];
+  const temp = { ...response.body[response.body.length - 1] };
   const newBlog = {
     ...temp,
     likes: +temp.likes + 1,
   };
-  const updated = await api.put(`/api/blog/${temp.id}`).send(newBlog);
-  expect(updated.request._data.likes).toBe(1);
+  await api
+    .put(`/api/blog/${temp.id}`)
+    .set("Authorization", testToken)
+    .send(newBlog)
+    .expect(200);
+
+  const blogs = await api.get("/api/blog").expect(200);
+  expect(blogs.body[blogs.body.length - 1].likes).toBe(1);
+});
+
+test("return a proper response code if the token is not provided", async () => {
+  const blog = {
+    title: "Canonical string reduction",
+    author: "Edsger W. Dijkstra",
+    url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+  };
+
+  const response = await api.post("/api/blog").send(blog).expect(401);
 });
 
 afterAll(async () => {

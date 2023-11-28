@@ -6,6 +6,7 @@ const userExtractor = (request, response, next) => {
     const decodedToken = jwt.verify(token, process.env.SECRET);
     request.user = decodedToken;
   } catch (error) {
+    console.log("buraya girdi");
     response
       .status(401)
       .send("Something went wrong while extracting the user from token");

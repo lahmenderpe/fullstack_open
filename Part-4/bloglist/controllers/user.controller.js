@@ -28,7 +28,7 @@ userRouter.post("/signup", async (request, response, next) => {
       const savedUser = await user.save();
       response.status(201).json(savedUser);
     } else {
-      response.status(400).json({
+      response.status(401).json({
         error: "Password is required.",
       });
     }
