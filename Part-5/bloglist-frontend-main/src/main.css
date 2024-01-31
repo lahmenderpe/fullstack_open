@@ -1,0 +1,33 @@
+.message {
+  padding: 20px 10px;
+  margin: 10px 0;
+  font-weight: bold;
+  border-radius: 10px;
+  width: fit-content;
+}
+
+.error {
+  background-color: #fff0f0;
+  color: red;
+  border: 1px solid red;
+}
+
+.success {
+  background-color: #eaffea;
+  color: green;
+  border: 1px solid green;
+}
+
+.blog {
+  background-color: #eee;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.blog p {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}

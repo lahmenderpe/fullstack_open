@@ -8,6 +8,11 @@ const userRouter = require("./controllers/user.controller.js");
 const { info, error } = require("./utils/logger.js");
 const errorHandler = require("./middleware/errorHandler.js");
 
+if (process.env.NODE_ENV === "test") {
+  const resetRouter = require("./controllers/reset.controller.js");
+  app.use("/api/reset", resetRouter);
+}
+
 // middlewares
 app.use(cors());
 app.use(express.json());

@@ -36,7 +36,7 @@ blogRouter.post(
         user: user.id,
       });
       const savedBlog = await blog.save();
-      const newUser = await User.find({ id: user.id });
+      const newUser = await User.findById(user.id);
       newUser.blogs = newUser.blogs.concat(savedBlog._id);
       await newUser.save();
       response.status(201).json(savedBlog);
@@ -55,6 +55,7 @@ blogRouter.delete(
 
     try {
       const blog = await Blog.findById(id);
+      console.log(blog);
       if (!blog) {
         return response.status(404).send("Blog does not exist");
       }
