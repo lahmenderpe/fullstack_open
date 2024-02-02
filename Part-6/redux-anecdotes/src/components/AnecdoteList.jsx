@@ -5,13 +5,19 @@ import { handleShowNotification } from "../reducers/notificationReducer";
 const AnecdoteList = () => {
   const dispatch = useDispatch();
   const anecdotes = useSelector((state) => state.anecdotes);
+  const filter = useSelector((state) => state.filter);
 
   const vote = (anecdote) => {
     dispatch(handleVoteAnecdote(anecdote.id));
     dispatch(handleShowNotification(`You voted "${anecdote.content}"`, 5));
   };
 
-  const anecdotesToShow = [...anecdotes].sort((a, b) => b.votes - a.votes);
+  const filteredAnecdotes = anecdotes.filter((anecdote) =>
+    anecdote.content.toLowerCase().includes(filter.toLowerCase())
+  );
+  const anecdotesToShow = [...filteredAnecdotes].sort(
+    (a, b) => b.votes - a.votes
+  );
 
   return (
     <div>
